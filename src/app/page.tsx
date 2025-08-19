@@ -17,6 +17,7 @@ type Post = {
 export default function Home() {
   const [topic, setTopic] = useState("");
   const [tone, setTone] = useState("");
+  const [count, setCount] = useState(3); // New: number of posts
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState("");
@@ -35,61 +36,64 @@ export default function Home() {
       const response = await fetch("/api/social/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          topic,
-          platforms: ["instagram", "facebook", "linkedin"],
-        }),
+        body: JSON.stringify({ topic, platforms: ["instagram", "facebook", "linkedin"], count }),
       });
 
       if (!response.ok) throw new Error("Failed to generate posts");
 
-      // Type-safe parsing
-      const data: { posts: Post[] } = await response.json();
-      setPosts(data.posts ?? []);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Something went wrong.";
-      setError(message);
+      const data = await response.json();
+      setPosts(data.posts || []);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold text-center">AI Social Media Post Generator</h1>
+    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-start py-16 px-4">
+      <div className="w-full max-w-2xl text-center space-y-6">
+        <h1 className="text-4xl font-bold">AI Social Media Post Generator</h1>
 
         {/* Input Section */}
-        <Card className="p-4 shadow-lg">
-          <CardContent className="space-y-4">
-            <Textarea
-              placeholder="Enter a topic (e.g., Summer Sale, Eco-Friendly Products)"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-            />
-            <Input
-              placeholder="Enter a tone (e.g., Friendly, Professional, Exciting)"
-              value={tone}
-              onChange={(e) => setTone(e.target.value)}
-            />
-            <Button
-              onClick={generatePosts}
-              disabled={loading || !topic}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              {loading && <Loader2 className="animate-spin h-4 w-4" />}
-              {loading ? "Generating..." : "Generate Posts"}
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
+          <Textarea
+            placeholder="Enter a topic (e.g., Summer Sale, Eco-Friendly Products)"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            className="text-lg"
+          />
+          <Input
+            placeholder="Enter a tone (e.g., Friendly, Professional, Exciting)"
+            value={tone}
+            onChange={(e) => setTone(e.target.value)}
+            className="text-lg"
+          />
+          <Input
+            type="number"
+            min={1}
+            max={10}
+            value={count}
+            onChange={(e) => setCount(Number(e.target.value))}
+            placeholder="Number of posts"
+          />
+          <Button
+            onClick={generatePosts}
+            disabled={loading || !topic}
+            className="w-full flex items-center justify-center gap-2 text-lg"
+          >
+            {loading && <Loader2 className="animate-spin h-5 w-5" />}
+            {loading ? "Generating..." : "Generate Posts"}
+          </Button>
+        </div>
 
         {/* Error message */}
-        {error && <p className="text-red-500 text-center font-medium">{error}</p>}
+        {error && <p className="text-red-500 font-medium">{error}</p>}
 
         {/* Generated posts */}
         <div className="space-y-4">
           {posts.map((post, idx) => (
-            <Card key={idx} className="shadow-md">
+            <Card key={idx} className="shadow-md rounded-lg">
               <CardContent className="p-4 space-y-2">
                 {post.headline && <h2 className="text-xl font-semibold">{post.headline}</h2>}
                 <p className="text-gray-700">{post.caption}</p>
@@ -106,9 +110,7 @@ export default function Home() {
                   variant="outline"
                   onClick={() =>
                     copyToClipboard(
-                      [post.headline, post.caption, (post.hashtags || []).join(" ")]
-                        .filter(Boolean)
-                        .join("\n\n")
+                      [post.headline, post.caption, (post.hashtags || []).join(" ")].filter(Boolean).join("\n\n")
                     )
                   }
                   className="flex items-center gap-1"

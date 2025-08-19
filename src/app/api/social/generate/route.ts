@@ -16,17 +16,25 @@ export async function POST(req: Request) {
     const platformList = Array.isArray(platforms) ? platforms : ["instagram"];
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4.1-mini", // fast & cheaper
+      model: "gpt-4.1-mini", // cost effective & fast
+      temperature: 0.8, // adds creativity / uniqueness
+      max_tokens: 800, // more room for longer posts
       messages: [
         {
           role: "system",
-          content: "You are a marketing assistant that generates engaging social media posts.",
+          content:
+            "You are a creative marketing assistant that generates engaging, long-form social media posts. Ensure outputs are platform-tailored, unique, and natural.",
         },
         {
           role: "user",
-          content: `Generate short, engaging social media posts for topic: "${topic}" for platforms: ${platformList.join(
+          content: `Generate 3 unique and different social media posts for topic: "${topic}" across the following platforms: ${platformList.join(
             ", "
-          )}. Include platform-tailored captions, optional headlines, and relevant hashtags.`,
+          )}.
+          
+          - Each post must be at least 150 words long.  
+          - Include an optional headline, a detailed caption, and relevant hashtags.  
+          - Posts should not be repetitive in tone or style.  
+          - Adapt writing style slightly for each platform (casual for Instagram, informative for LinkedIn, etc.).`,
         },
       ],
       response_format: {
@@ -77,14 +85,18 @@ export async function POST(req: Request) {
         posts = (parsed as { posts: typeof posts }).posts;
       }
     } catch (e: unknown) {
-      console.error("Failed to parse response content:", e instanceof Error ? e.message : e);
+      console.error(
+        "Failed to parse response content:",
+        e instanceof Error ? e.message : e
+      );
     }
 
     return NextResponse.json({ posts });
-} catch (err: unknown) {
-  console.error("Error in /api/social/generate:", err);
-  return NextResponse.json(
-    { error: err instanceof Error ? err.message : "Internal server error" },
-    { status: 500 }
-  );
-}}
+  } catch (err: unknown) {
+    console.error("Error in /api/social/generate:", err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
