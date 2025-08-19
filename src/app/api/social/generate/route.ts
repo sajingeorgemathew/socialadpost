@@ -72,7 +72,7 @@ export async function POST(req: Request) {
         parsed &&
         typeof parsed === "object" &&
         "posts" in parsed &&
-        Array.isArray((parsed as any).posts)
+        Array.isArray((parsed as { posts?: unknown }).posts)
       ) {
         posts = (parsed as { posts: typeof posts }).posts;
       }
@@ -81,9 +81,10 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ posts });
-  } catch (err: unknown) {
-    console.error("Error in /api/social/generate:", err);
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
-}
+} catch (err: unknown) {
+  console.error("Error in /api/social/generate:", err);
+  return NextResponse.json(
+    { error: err instanceof Error ? err.message : "Internal server error" },
+    { status: 500 }
+  );
+}}
