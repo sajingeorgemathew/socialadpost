@@ -17,7 +17,7 @@ type Post = {
 export default function Home() {
   const [topic, setTopic] = useState("");
   const [tone, setTone] = useState("");
-  const [count, setCount] = useState(3); // New: number of posts
+  const [count, setCount] = useState(3);
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState("");
@@ -51,23 +51,25 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-start py-16 px-4">
+    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col items-center justify-start py-16 px-4 text-white">
       <div className="w-full max-w-2xl text-center space-y-6">
-        <h1 className="text-4xl font-bold">AI Social Media Post Generator</h1>
+        <h1 className="text-5xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+          AI Social Media Post Generator
+        </h1>
 
         {/* Input Section */}
-        <div className="bg-white rounded-xl shadow-md p-6 space-y-4">
+        <div className="bg-gray-900/80 backdrop-blur-md rounded-2xl shadow-xl p-8 space-y-6 border border-gray-700">
           <Textarea
             placeholder="Enter a topic (e.g., Summer Sale, Eco-Friendly Products)"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            className="text-lg"
+            className="text-lg bg-gray-800 text-white placeholder-gray-400 rounded-lg p-4 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-cyan-500"
           />
           <Input
             placeholder="Enter a tone (e.g., Friendly, Professional, Exciting)"
             value={tone}
             onChange={(e) => setTone(e.target.value)}
-            className="text-lg"
+            className="text-lg bg-gray-800 text-white placeholder-gray-400 rounded-lg p-4 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
           <Input
             type="number"
@@ -76,11 +78,12 @@ export default function Home() {
             value={count}
             onChange={(e) => setCount(Number(e.target.value))}
             placeholder="Number of posts"
+            className="text-lg bg-gray-800 text-white placeholder-gray-400 rounded-lg p-4 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <Button
             onClick={generatePosts}
             disabled={loading || !topic}
-            className="w-full flex items-center justify-center gap-2 text-lg"
+            className="w-full py-4 bg-gradient-to-r from-cyan-500 to-purple-600 font-bold rounded-xl hover:scale-105 transition-transform flex items-center justify-center gap-2"
           >
             {loading && <Loader2 className="animate-spin h-5 w-5" />}
             {loading ? "Generating..." : "Generate Posts"}
@@ -88,17 +91,17 @@ export default function Home() {
         </div>
 
         {/* Error message */}
-        {error && <p className="text-red-500 font-medium">{error}</p>}
+        {error && <p className="text-red-400 font-semibold">{error}</p>}
 
         {/* Generated posts */}
-        <div className="space-y-4">
+        <div className="space-y-4 mt-8">
           {posts.map((post, idx) => (
-            <Card key={idx} className="shadow-md rounded-lg">
-              <CardContent className="p-4 space-y-2">
-                {post.headline && <h2 className="text-xl font-semibold">{post.headline}</h2>}
-                <p className="text-gray-700">{post.caption}</p>
+            <Card key={idx} className="shadow-2xl rounded-xl border border-gray-700 hover:scale-[1.02] transition-transform bg-gray-900/80 backdrop-blur-md">
+              <CardContent className="p-6 space-y-3">
+                {post.headline && <h2 className="text-2xl font-bold text-cyan-400">{post.headline}</h2>}
+                <p className="text-gray-200">{post.caption}</p>
                 {post.hashtags && post.hashtags.length > 0 && (
-                  <p className="text-sm text-blue-600">
+                  <p className="text-sm text-purple-400">
                     {post.hashtags.map((tag) => `#${tag}`).join(" ")}
                   </p>
                 )}
@@ -113,7 +116,7 @@ export default function Home() {
                       [post.headline, post.caption, (post.hashtags || []).join(" ")].filter(Boolean).join("\n\n")
                     )
                   }
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 text-cyan-400 border-cyan-400 hover:bg-cyan-500 hover:text-white transition"
                 >
                   <Copy className="h-4 w-4" /> Copy Post
                 </Button>
