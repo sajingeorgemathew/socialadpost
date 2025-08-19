@@ -32,18 +32,23 @@ export default function Home() {
     setPosts([]);
 
     try {
-      const response = await fetch("/api/generate", {
+      const response = await fetch("/api/social/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, platforms: ["instagram", "facebook", "linkedin"] }),
+        body: JSON.stringify({
+          topic,
+          platforms: ["instagram", "facebook", "linkedin"],
+        }),
       });
 
       if (!response.ok) throw new Error("Failed to generate posts");
 
-      const data = await response.json();
-      setPosts(data.posts || []);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+      // Type-safe parsing
+      const data: { posts: Post[] } = await response.json();
+      setPosts(data.posts ?? []);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong.";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -101,7 +106,9 @@ export default function Home() {
                   variant="outline"
                   onClick={() =>
                     copyToClipboard(
-                      [post.headline, post.caption, (post.hashtags || []).join(" ")].filter(Boolean).join("\n\n")
+                      [post.headline, post.caption, (post.hashtags || []).join(" ")]
+                        .filter(Boolean)
+                        .join("\n\n")
                     )
                   }
                   className="flex items-center gap-1"

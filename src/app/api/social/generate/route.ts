@@ -24,7 +24,9 @@ export async function POST(req: Request) {
         },
         {
           role: "user",
-          content: `Generate short, engaging social media posts for topic: "${topic}" for platforms: ${platformList.join(", ")}. Include platform-tailored captions, optional headlines, and relevant hashtags.`,
+          content: `Generate short, engaging social media posts for topic: "${topic}" for platforms: ${platformList.join(
+            ", "
+          )}. Include platform-tailored captions, optional headlines, and relevant hashtags.`,
         },
       ],
       response_format: {
@@ -56,20 +58,32 @@ export async function POST(req: Request) {
 
     // Parse the response content from string to object
     const content = response.choices?.[0]?.message?.content;
-    let posts: any[] = [];
+    let posts: {
+      platform: string;
+      headline?: string;
+      caption: string;
+      hashtags?: string[];
+    }[] = [];
+
     try {
-      const parsed = typeof content === "string" ? JSON.parse(content) : content;
-      posts = parsed?.posts ?? [];
-    } catch (e) {
-      console.error("Failed to parse response content:", e);
+      const parsed =
+        typeof content === "string" ? JSON.parse(content) : content;
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        "posts" in parsed &&
+        Array.isArray((parsed as any).posts)
+      ) {
+        posts = (parsed as { posts: typeof posts }).posts;
+      }
+    } catch (e: unknown) {
+      console.error("Failed to parse response content:", e instanceof Error ? e.message : e);
     }
 
     return NextResponse.json({ posts });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Error in /api/social/generate:", err);
-    return NextResponse.json(
-      { error: err?.message || "Internal server error" },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
