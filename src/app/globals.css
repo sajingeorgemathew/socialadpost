@@ -5,10 +5,14 @@
 
 /* Custom global styles */
 body {
-  font-family: 'Inter', sans-serif; /* Modern, clean font for tech feel */
-  background-color: #f3f4f6; /* Light gray background */
+  @apply font-sans; /* Inter or default sans-serif */
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0f10, #1d1b4b);
+  position: relative;
+  color: white;
+  overflow-x: hidden;
 }
 
 /* Optional: smoother scroll */
@@ -28,7 +32,7 @@ button {
   transition: all 0.2s ease-in-out;
 }
 
-/* Optional: input & textarea default styles */
+/* Inputs & textareas */
 input,
 textarea {
   border-radius: 0.5rem;
@@ -44,40 +48,64 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
-/* Optional: card shadow */
+/* Card shadow */
 .card {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   border-radius: 1rem;
+  background: rgba(15, 15, 16, 0.8); /* Dark translucent card */
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s ease-in-out;
 }
 
-/* Scrollbar styling (optional for advanced UI feel) */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.5); /* Tailwind gray-400 */
+  background-color: rgba(156, 163, 175, 0.5);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(107, 114, 128, 0.7); /* Tailwind gray-500 */
+  background-color: rgba(107, 114, 128, 0.7);
 }
 
-/* Grid Background */
+/* Futuristic input card */
+.input {
+  background-color: #010201;
+  border: none;
+  width: 100%;
+  height: 56px;
+  border-radius: 12px;
+  color: white;
+  padding-inline: 59px;
+  font-size: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.input::placeholder {
+  color: #c0b9c0;
+}
+
+/* Grid background overlay */
 .grid-bg {
-  height: 200%;
-  width: 200%;
-  background-image: linear-gradient(to right, #0f0f10 1px, transparent 1px),
-    linear-gradient(to bottom, #0f0f10 1px, transparent 1px);
-  background-size: 1rem 1rem;
-  background-position: center center;
   position: absolute;
-  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 2rem 2rem;
+  z-index: 0;
+  pointer-events: none;
   filter: blur(1px);
 }
 
-/* Uiverse Futuristic Input Card */
+/* Glow layers for futuristic input card */
 .white,
 .border,
 .darkBorderBg,
@@ -93,17 +121,25 @@ textarea:focus {
   filter: blur(3px);
 }
 
-.input {
-  background-color: #010201;
-  border: none;
-  width: 100%;
-  height: 56px;
-  border-radius: 10px;
-  color: white;
-  padding-inline: 59px;
-  font-size: 18px;
+.glow {
+  opacity: 0.4;
+  max-height: 130px;
+  max-width: 354px;
 }
 
-.input::placeholder {
-  color: #c0b9c0;
+.white::before,
+.border::before,
+.darkBorderBg::before,
+.glow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(1.3);
+  transition: all 2s ease-in-out;
 }

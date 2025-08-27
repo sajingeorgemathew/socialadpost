@@ -72,7 +72,7 @@ export default function Home() {
           <div className="white"></div>
           <div className="border"></div>
 
-          <div id="main" className="relative w-full max-w-lg">
+          <div id="main" className="relative w-full max-w-lg space-y-4">
             <Textarea
               placeholder="Enter a topic (e.g., Summer Sale, Eco-Friendly Products)"
               value={topic}
@@ -84,7 +84,7 @@ export default function Home() {
               placeholder="Enter a tone (e.g., Friendly, Professional, Exciting)"
               value={tone}
               onChange={(e) => setTone(e.target.value)}
-              className="input mt-4"
+              className="input"
             />
             <input
               type="number"
@@ -93,12 +93,12 @@ export default function Home() {
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
               placeholder="Number of posts"
-              className="input mt-4"
+              className="input"
             />
             <Button
               onClick={generatePosts}
               disabled={loading || !topic}
-              className="w-full mt-6 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 font-bold rounded-xl hover:scale-105 transition-transform flex items-center justify-center gap-2"
+              className="w-full py-4 bg-gradient-to-r from-cyan-500 to-purple-600 font-bold rounded-xl hover:scale-105 transition-transform flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="animate-spin h-5 w-5" />}
               {loading ? "Generating..." : "Generate Posts"}
@@ -109,7 +109,7 @@ export default function Home() {
         {/* 🔹 Error */}
         {error && <p className="text-red-400 font-semibold">{error}</p>}
 
-        {/* 🔹 Posts */}
+        {/* 🔹 Generated Posts */}
         <div className="space-y-6 mt-10">
           {posts.map((post, idx) => (
             <Card
